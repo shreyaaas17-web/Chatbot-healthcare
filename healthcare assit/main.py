@@ -24,7 +24,7 @@ load_dotenv()
 logging.basicConfig(level=os.getenv("LOG_LEVEL", "INFO").upper())
 logger = logging.getLogger(__name__)
 
-OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL", "anthropic/claude-sonnet-4.5")
+OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL")
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 SECRET_KEY = os.getenv("SECRET_KEY") or secrets.token_urlsafe(32)
 if not os.getenv("SECRET_KEY"):
