@@ -1,5 +1,5 @@
 streamlit
-anthropic
+openai
 fastapi
 PyJWT
 python-dotenv
