@@ -1,7 +1,7 @@
+streamlit
+anthropic
 fastapi
-openai
 PyJWT
 python-dotenv
 requests
-streamlit
-uvicorn[standard]
+uvicorn
