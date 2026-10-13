@@ -1,0 +1,26 @@
+"use client";
+
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
+import { CalendarDays, UserRound } from "lucide-react";
+import ProfileHeader, { patientHighlights } from "@/components/ProfileHeader";
+
+type Appointment={id:number;visit_date:string;time_slot:string;status:string;doctor_name:string;hospital_name:string;hospital_city:string;symptoms:string;notes:string};
+type Profile={dob?:string;gender?:string;blood_group?:string;allergies?:string[]|string;conditions?:string[]|string;full_name?:string;email?:string;phone?:string};
+
+export default function PatientDashboard(){
+  const [appointments,setAppointments]=useState<Appointment[]>([]);const [profile,setProfile]=useState<Profile|null>(null);const [error,setError]=useState("");const [loading,setLoading]=useState(true);
+  useEffect(()=>{Promise.all([fetch("/api/auth/me",{cache:"no-store"}),fetch("/api/appointments",{cache:"no-store"}),fetch("/api/patients/me",{cache:"no-store"})]).then(async([authResponse,appointmentResponse,profileResponse])=>{const auth=await authResponse.json();if(!auth.user||auth.user.role!=="patient"){setError("Sign in with a patient account to view this dashboard.");return;}const appointmentData=await appointmentResponse.json();if(!appointmentResponse.ok)throw new Error(appointmentData.error??"Could not load appointments.");setAppointments(appointmentData.appointments??[]);const profileData=await profileResponse.json();if(profileResponse.ok)setProfile(profileData.profile);}).catch((reason)=>setError(reason instanceof Error?reason.message:"Unable to load the dashboard.")).finally(()=>setLoading(false));},[]);
+  const active=appointments.filter((item)=>item.status!=="cancelled"&&item.status!=="declined");const upcoming=active.filter((item)=>item.visit_date>=new Date().toISOString().slice(0,10));const past=appointments.filter((item)=>item.visit_date<new Date().toISOString().slice(0,10)||item.status==="cancelled"||item.status==="declined");
+  async function cancel(id:number){const response=await fetch(`/api/appointments/${id}`,{method:"DELETE"});if(response.ok)setAppointments((current)=>current.map((item)=>item.id===id?{...item,status:"cancelled"}:item));else{const data=await response.json();setError(data.error??"Could not cancel that appointment.");}}
+  const next=useMemo(()=>upcoming[0],[upcoming]);const todayKey=new Date().toISOString().slice(0,10);const completedCount=appointments.filter((item)=>item.status==="completed"||(item.status==="accepted"&&item.visit_date<todayKey)).length;
+  if(loading)return <div className="card">Loading patient dashboard…</div>;
+  if(error&&!appointments.length)return <section className="form-card"><h1>Patient dashboard</h1><p className="notice notice-error">{error}</p><Link className="btn" href="/login">Sign in</Link></section>;
+  return <><ProfileHeader name={profile?.full_name??"Patient"} role="Patient" lines={[profile?.email??"",next?`Next visit: ${next.visit_date} · ${next.time_slot} with ${next.doctor_name}`:"No upcoming visits yet"].filter(Boolean)} stats={[{label:"upcoming",value:upcoming.length},{label:"completed",value:completedCount},{label:"total visits",value:appointments.length}]} actions={<Link className="btn" href="/book"><CalendarDays size={16}/> Book a visit</Link>} highlights={patientHighlights}/>
+    {error&&<div className="notice notice-error">{error}</div>}
+    <div className="dashboard-grid"><section><div className="section-head"><div><div className="eyebrow">YOUR SCHEDULE</div><h2>Upcoming appointments</h2></div><Link className="btn" href="/book"><CalendarDays size={16}/> Book a visit</Link></div>
+      {upcoming.length?upcoming.map((item)=><article className="hospital-card" key={item.id}><div><span className="badge">{item.status}</span><h3>{item.visit_date} · {item.time_slot}</h3><p>{item.doctor_name} · {item.hospital_name}, {item.hospital_city}</p>{item.symptoms&&<p className="muted">{item.symptoms}</p>}</div>{["pending","accepted"].includes(item.status)&&<button className="btn btn-secondary" onClick={()=>cancel(item.id)}>Cancel</button>}</article>):<div className="card"><p>No upcoming visits are scheduled.</p><Link className="text-link" href="/hospitals">Explore sample facilities</Link></div>}
+      <details className="card" style={{marginTop:16}}><summary>Past and cancelled visits</summary>{past.length?past.map((item)=><p key={item.id}>{item.visit_date} · {item.doctor_name} · {item.status}</p>):<p className="muted">No past visits.</p>}</details>
+    </section><aside><div className="section-head"><div><div className="eyebrow">PROFILE</div><h2>Patient details</h2></div></div><div className="card"><div className="specialty-icon"><UserRound/></div><h3>{profile?.full_name??"Patient"}</h3><p>{profile?.email}</p><p>{profile?.phone}</p><p>Date of birth: {profile?.dob??"Not provided"}</p><p>Blood group: {profile?.blood_group??"Not known"}</p><p>Allergies: {Array.isArray(profile?.allergies)?profile?.allergies.join(", "):profile?.allergies||"None listed"}</p><p>Conditions: {Array.isArray(profile?.conditions)?profile?.conditions.join(", "):profile?.conditions||"None listed"}</p><p className="muted">Demo data only. Verify health details with a clinician.</p></div></aside></div>
+  </>;
+}

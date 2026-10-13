@@ -1,0 +1,16 @@
+main.py
+app.py
+streamlit_app.py
+requirements.txt
+requirements-api.txt
+Dockerfile
+utils/
+data/
+pages/
+.streamlit/
+clinic.db*
+.env
+.env.*
+!.env.example
+.venv/
+__pycache__/

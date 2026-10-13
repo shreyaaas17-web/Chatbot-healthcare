@@ -1,0 +1,9 @@
+export type Language = "en" | "hi" | "mr";
+
+const messages: Record<Language, Record<string,string>> = {
+  en: { home:"Home", hospitals:"Hospitals", map:"Care map", symptoms:"Symptom guide", risk:"Health risk", predictor:"Disease guide", wellness:"Wellness", tools:"Tools", login:"Sign in", start:"Get started", signout:"Sign out", symptomTitle:"Feeling off? Let's figure out a safe next step.", symptomPrompt:"Describe what you are experiencing. Use fictional details.", symptomSubmit:"Get care direction", emergency:"Possible emergency symptoms. Contact local emergency services now.", disclaimer:"General information only. Not a diagnosis or substitute for professional care." },
+  hi: { home:"होम", hospitals:"अस्पताल", map:"देखभाल मानचित्र", symptoms:"लक्षण मार्गदर्शिका", risk:"स्वास्थ्य जोखिम", predictor:"लक्षण गाइड", wellness:"वेलनेस", tools:"टूल्स", login:"साइन इन", start:"शुरू करें", signout:"साइन आउट", symptomTitle:"अस्वस्थ महसूस कर रहे हैं? सुरक्षित अगला कदम जानें।", symptomPrompt:"आप क्या महसूस कर रहे हैं? केवल काल्पनिक जानकारी लिखें।", symptomSubmit:"देखभाल सुझाव देखें", emergency:"आपातकालीन लक्षण हो सकते हैं। स्थानीय आपातकालीन सेवा से अभी संपर्क करें।", disclaimer:"यह सामान्य जानकारी है, निदान या पेशेवर देखभाल का विकल्प नहीं।" },
+  mr: { home:"मुख्यपृष्ठ", hospitals:"रुग्णालये", map:"सेवा नकाशा", symptoms:"लक्षण मार्गदर्शक", risk:"आरोग्य जोखीम", predictor:"लक्षण माहिती", wellness:"वेलनेस", login:"साइन इन", start:"सुरू करा", signout:"साइन आउट", symptomTitle:"बरे वाटत नाही? सुरक्षित पुढचे पाऊल पाहूया.", symptomPrompt:"तुम्हाला काय जाणवत आहे? फक्त काल्पनिक माहिती वापरा.", symptomSubmit:"सेवा मार्गदर्शन मिळवा", emergency:"आपत्कालीन लक्षणे असू शकतात. स्थानिक आपत्कालीन सेवेशी त्वरित संपर्क करा.", disclaimer:"ही सामान्य माहिती आहे; निदान किंवा वैद्यकीय सेवेचा पर्याय नाही." },
+};
+
+export function translate(language:Language,key:string):string{return messages[language][key]??messages.en[key]??key;}

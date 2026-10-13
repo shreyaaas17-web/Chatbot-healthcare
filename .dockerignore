@@ -1,0 +1,11 @@
+.env
+.streamlit/secrets.toml
+clinic.db
+clinic.db-shm
+clinic.db-wal
+.git
+.github
+.vscode
+__pycache__
+.venv
+*.pyc

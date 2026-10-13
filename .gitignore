@@ -1,0 +1,15 @@
+.env
+clinic.db
+clinic.db-shm
+clinic.db-wal
+.streamlit/secrets.toml
+.github/agents/
+.vscode/
+__pycache__/
+.venv/
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+.vercel/
+.env.local
